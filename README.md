@@ -1,415 +1,120 @@
-# E-Commerce Analytics Microservices
+# E-Commerce Analytics Platform
 
-A production-ready microservices architecture for e-commerce analytics built with Spring Boot, Spring Cloud, and MySQL.
+Microservices-based analytics platform built with Spring Boot and React for processing e-commerce sales, inventory, and user activity data.
 
-## 📐 Architecture
+## Architecture
 
 ```
-┌──────────────┐
-│   Client     │
-└──────┬───────┘
-       │
-       ▼
-┌──────────────────────┐
-│   API Gateway        │ (Port 8080)
-│   Spring Cloud GW    │
-└──────┬───────────────┘
-       │
-       ├─────────────────────┐
-       │                     │
-       ▼                     ▼
-┌──────────────┐    ┌────────────────┐
-│  Discovery   │    │   Analytics    │
-│   Service    │◄───┤    Service     │
-│  (Eureka)    │    │                │
-│ Port 8761    │    │   Port 8081    │
-└──────────────┘    └───────┬────────┘
-                            │
-                    ┌───────┴────────┐
-                    │                │
-                    ▼                ▼
-             ┌──────────┐    ┌──────────┐
-             │  MySQL   │    │  Redis   │
-             │  :3307   │    │  :6379   │
-             └──────────┘    └──────────┘
+React Dashboard (Port 80) → API Gateway (8080) → Analytics Service (8081)
+                                    ↓                        ↓
+                            Discovery Service (8761)    MySQL + Redis
 ```
 
-## 🚀 Services
+**Services:**
+- **Analytics Service** - REST APIs for sales, inventory, and user analytics
+- **API Gateway** - Request routing and load balancing
+- **Discovery Service** - Eureka service registry
+- **Dashboard** - React frontend with real-time charts and metrics
 
-### 1. **Discovery Service** (Eureka Server)
-- Service registry and discovery
-- Port: 8761
-- Dashboard: http://localhost:8761
+## Tech Stack
 
-### 2. **API Gateway** (Spring Cloud Gateway)
-- Single entry point for all requests
-- Load balancing & routing
-- Port: 8080
-- Routes all `/api/analytics/**` to Analytics Service
+**Backend:** Java 17, Spring Boot 3.2, Spring Cloud, MySQL 8.0, Redis 7
+**Frontend:** React 18, Vite, Recharts, Axios
+**Infrastructure:** Docker, Docker Compose
 
-### 3. **Analytics Service**
-- Business logic for sales, inventory, and user activity analytics
-- Port: 8081
-- MySQL database with Redis caching
-- Comprehensive REST APIs
-
-## 📊 API Endpoints
-
-### Sales Analytics
+## Quick Start
 
 ```bash
-# Get sales by category
-GET http://localhost:8080/api/analytics/sales/by-category?startDate=2024-01-01&endDate=2024-12-31
-
-# Get top selling products
-GET http://localhost:8080/api/analytics/sales/top-products?startDate=2024-01-01&endDate=2024-12-31&limit=10
-
-# Get daily sales
-GET http://localhost:8080/api/analytics/sales/daily?startDate=2024-01-01&endDate=2024-12-31
-
-# Get total sales
-GET http://localhost:8080/api/analytics/sales/total?startDate=2024-01-01&endDate=2024-12-31
-```
-
-### Inventory Analytics
-
-```bash
-# Get inventory status
-GET http://localhost:8080/api/analytics/inventory/status
-
-# Get low stock products
-GET http://localhost:8080/api/analytics/inventory/low-stock?threshold=50
-```
-
-### User Activity Analytics
-
-```bash
-# Get activity summary
-GET http://localhost:8080/api/analytics/user-activity/summary?startDate=2024-01-01&endDate=2024-12-31
-
-# Get most viewed products
-GET http://localhost:8080/api/analytics/user-activity/most-viewed?startDate=2024-01-01&endDate=2024-12-31&limit=10
-
-# Get unique users count
-GET http://localhost:8080/api/analytics/user-activity/unique-users?startDate=2024-01-01&endDate=2024-12-31
-```
-
-## 🛠️ Technology Stack
-
-- **Java 17**
-- **Spring Boot 3.2.0**
-- **Spring Cloud 2023.0.0**
-- **Spring Data JPA**
-- **MySQL 8.0**
-- **Redis 7**
-- **Docker & Docker Compose**
-- **JUnit 5 & Mockito**
-- **Testcontainers**
-
-## 📦 Prerequisites
-
-- **Docker & Docker Compose** (Required)
-- **Java 17** (Optional - only if building outside Docker)
-- **Maven 3.8+** (Optional - batch scripts use Docker Maven)
-
-## 🚀 Quick Start (Windows)
-
-### **Method 1: Docker Compose - Everything in Containers (Recommended)**
-
-Start all services with one command:
-
-```bash
+# Start all services
 docker-compose up --build
+
+# Access
+- Dashboard: http://localhost
+- API Gateway: http://localhost:8080
+- Eureka: http://localhost:8761
+- Adminer: http://localhost:8082
 ```
 
-Wait 2-3 minutes for services to start. Access:
-- **Eureka**: http://localhost:8761
-- **API Gateway**: http://localhost:8080
-- **Analytics API**: http://localhost:8081
-- **Adminer (DB)**: http://localhost:8082
+Wait ~2 minutes for services to initialize. Dashboard auto-refreshes every 30-60 seconds.
 
-Test the API:
+## Development
+
+**Backend (Analytics Service):**
 ```bash
-curl http://localhost:8080/api/analytics/inventory/status
+cd analytics-service
+run.bat  # or mvn spring-boot:run
 ```
 
-Stop everything:
+**Frontend (Dashboard):**
 ```bash
-docker-compose down
+cd dashboard
+npm install
+npm run dev  # http://localhost:3000
 ```
+
+## API Endpoints
+
+All endpoints via API Gateway (`http://localhost:8080/api/analytics`)
+
+**Sales:**
+- `GET /sales/by-category?startDate={date}&endDate={date}` - Sales by category
+- `GET /sales/top-products?startDate={date}&endDate={date}&limit={n}` - Top products
+- `GET /sales/daily?startDate={date}&endDate={date}` - Daily sales trend
+- `GET /sales/total?startDate={date}&endDate={date}` - Total sales
+
+**Inventory:**
+- `GET /inventory/status` - All products with stock levels
+- `GET /inventory/low-stock?threshold={n}` - Products below threshold
+
+**User Activity:**
+- `GET /user-activity/summary?startDate={date}&endDate={date}` - Activity summary
+- `GET /user-activity/most-viewed?startDate={date}&endDate={date}&limit={n}` - Top viewed
+- `GET /user-activity/unique-users?startDate={date}&endDate={date}` - Unique user count
+
+## Database
+
+**MySQL** (port 3307):
+```bash
+mysql -h 127.0.0.1 -P 3307 -u ecommerce_user -pecommerce_pass ecommerce_analytics
+```
+
+**Adminer UI:** http://localhost:8082 (server: `mysql`, user: `ecommerce_user`, pass: `ecommerce_pass`)
+
+Sample data auto-loaded on startup from `database/init/`.
+
+## Testing
+
+```bash
+cd analytics-service
+mvn test              # Unit tests
+mvn verify            # Integration tests (Testcontainers)
+```
+
+## Project Structure
+
+```
+├── analytics-service/     # Main business logic + REST APIs
+├── api-gateway/           # Spring Cloud Gateway
+├── discovery-service/     # Eureka server
+├── dashboard/             # React frontend
+├── database/init/         # SQL schema + sample data
+└── docker-compose.yml     # All services orchestration
+```
+
+## Monitoring
+
+Health checks available at `/actuator/health`:
+- Analytics: http://localhost:8081/actuator/health
+- Gateway: http://localhost:8080/actuator/health
+- Discovery: http://localhost:8761/actuator/health
+
+## Notes
+
+- MySQL on port 3307 (not 3306) to avoid conflicts
+- Redis cache TTL: 10 minutes
+- Dashboard shows backend connection status banner if services unavailable
+- All dates in `yyyy-MM-dd` format
 
 ---
 
-### **Method 2: Using Batch Scripts (No Maven Installation)**
-
-#### Step 1: Start Infrastructure
-```bash
-docker-compose up -d mysql redis adminer
-```
-
-#### Step 2: Run Services (Open 3 separate CMD windows)
-
-**CMD Window 1:**
-```bash
-cd discovery-service
-run.bat
-```
-
-**CMD Window 2:**
-```bash
-cd api-gateway
-run.bat
-```
-
-**CMD Window 3:**
-```bash
-cd analytics-service
-run.bat
-```
-
----
-
-### **Method 3: Traditional Maven (Requires Maven Installation)**
-
-If you have Maven installed:
-
-```bash
-# Build all
-build-all.bat
-
-# Or manually for each service
-cd discovery-service
-mvn clean install
-mvn spring-boot:run
-```
-
-Install Maven: https://maven.apache.org/download.cgi
-
-## ✅ Verify Setup
-
-After starting services (any method), verify they're running:
-
-```bash
-# Check Eureka Dashboard (should show registered services)
-# Browser: http://localhost:8761
-
-# Test Analytics API
-curl "http://localhost:8080/api/analytics/inventory/status"
-```
-
-Or open in browser:
-- http://localhost:8080/api/analytics/inventory/status
-
-## 🗄️ Database Access
-
-**Via Adminer (Web UI):**
-- URL: http://localhost:8082 ⚠️ (Changed from 8080)
-- System: MySQL
-- Server: mysql
-- Username: ecommerce_user
-- Password: ecommerce_pass
-- Database: ecommerce_analytics
-
-**Direct MySQL Connection:**
-```bash
-mysql -h 127.0.0.1 -P 3307 -u ecommerce_user -pecommerce_pass
-```
-
-**Note**: MySQL is on port **3307** (not 3306) to avoid conflicts.
-
-## 🧪 Testing
-
-### Run Unit Tests
-
-**Using batch script:**
-```bash
-cd analytics-service
-test.bat
-```
-
-**Using Maven (if installed):**
-```bash
-cd analytics-service
-mvn test
-```
-
-### Run Integration Tests (with Testcontainers)
-
-```bash
-cd analytics-service
-mvn verify
-```
-
-Integration tests automatically spin up MySQL container via Testcontainers.
-
-## 📈 Sample Usage Scenarios
-
-### Scenario 1: Get Sales Report
-
-```bash
-# Get sales by category for last 30 days
-curl "http://localhost:8080/api/analytics/sales/by-category?startDate=2024-11-01&endDate=2024-11-30"
-```
-
-### Scenario 2: Check Low Stock Items
-
-```bash
-# Get products with stock below 50
-curl "http://localhost:8080/api/analytics/inventory/low-stock?threshold=50"
-```
-
-### Scenario 3: View Top Products
-
-```bash
-# Get top 5 selling products
-curl "http://localhost:8080/api/analytics/sales/top-products?startDate=2024-01-01&endDate=2024-12-31&limit=5"
-```
-
-## 🔧 Configuration
-
-### Port Configuration
-
-| Service | Port | Configuration File |
-|---------|------|--------------------|
-| Discovery Service | 8761 | `discovery-service/src/main/resources/application.yml` |
-| API Gateway | 8080 | `api-gateway/src/main/resources/application.yml` |
-| Analytics Service | 8081 | `analytics-service/src/main/resources/application.yml` |
-
-### Database Configuration
-
-Edit `analytics-service/src/main/resources/application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3307/ecommerce_analytics
-    username: ecommerce_user
-    password: ecommerce_pass
-```
-
-### Redis Configuration
-
-```yaml
-spring:
-  redis:
-    host: localhost
-    port: 6379
-```
-
-## 📊 Monitoring & Health Checks
-
-Each service exposes actuator endpoints:
-
-```bash
-# Discovery Service Health
-curl http://localhost:8761/actuator/health
-
-# API Gateway Health
-curl http://localhost:8080/actuator/health
-
-# Analytics Service Health
-curl http://localhost:8081/actuator/health
-```
-
-## 🐛 Troubleshooting
-
-### Service Not Registering with Eureka
-
-1. Ensure Discovery Service is running first
-2. Check logs for connection errors
-3. Verify `eureka.client.service-url.defaultZone` in application.yml
-
-### Database Connection Issues
-
-```bash
-# Check if MySQL is running
-docker ps | grep mysql
-
-# View MySQL logs
-docker logs ecommerce-mysql
-
-# Test connection
-mysql -h 127.0.0.1 -P 3307 -u ecommerce_user -pecommerce_pass -e "SHOW DATABASES;"
-```
-
-### Redis Connection Issues
-
-```bash
-# Check if Redis is running
-docker ps | grep redis
-
-# Test Redis
-docker exec -it ecommerce-redis redis-cli ping
-# Should return: PONG
-```
-
-## 🏗️ Project Structure
-
-```
-Ecommerce/
-├── docker-compose.yml
-├── database/
-│   └── init/
-│       ├── 01-schema.sql
-│       └── 02-sample-data.sql
-├── discovery-service/
-│   ├── pom.xml
-│   └── src/main/
-│       ├── java/com/ecommerce/discovery/
-│       └── resources/application.yml
-├── api-gateway/
-│   ├── pom.xml
-│   └── src/main/
-│       ├── java/com/ecommerce/gateway/
-│       └── resources/application.yml
-└── analytics-service/
-    ├── pom.xml
-    └── src/
-        ├── main/
-        │   ├── java/com/ecommerce/analytics/
-        │   │   ├── controller/
-        │   │   ├── service/
-        │   │   ├── repository/
-        │   │   ├── model/
-        │   │   └── dto/
-        │   └── resources/application.yml
-        └── test/
-            └── java/com/ecommerce/analytics/
-```
-
-## 🔐 Security Considerations
-
-This is a development setup. For production:
-
-1. Enable Spring Security
-2. Add OAuth2/JWT authentication
-3. Use secrets management (Vault, AWS Secrets Manager)
-4. Enable HTTPS/TLS
-5. Add rate limiting
-6. Configure proper CORS policies
-
-## 📝 Next Steps
-
-- [ ] Add Spring Cloud Config for centralized configuration
-- [ ] Implement circuit breakers (Resilience4j)
-- [ ] Add distributed tracing (Zipkin/Sleuth)
-- [ ] Set up CI/CD pipeline
-- [ ] Add Kafka for event streaming
-- [ ] Implement authentication/authorization
-- [ ] Add API documentation (Swagger/OpenAPI)
-
-## 📄 License
-
-This project is for educational purposes.
-
-## 👥 Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Create Pull Request
-
----
-
-**Built with ❤️ using Spring Boot & Spring Cloud**
+Built with Spring Boot microservices architecture and React dashboard for real-time analytics visualization.

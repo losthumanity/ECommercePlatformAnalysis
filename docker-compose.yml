@@ -111,6 +111,20 @@ services:
       discovery-service:
         condition: service_healthy
 
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: ecommerce-dashboard
+    ports:
+      - "80:80"
+    networks:
+      - ecommerce-net
+    depends_on:
+      - api-gateway
+    environment:
+      - NODE_ENV=production
+
 networks:
   ecommerce-net:
     driver: bridge
