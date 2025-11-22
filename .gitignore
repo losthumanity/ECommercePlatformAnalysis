@@ -1,0 +1,73 @@
+# Maven
+**/target/
+**/pom.xml.tag
+**/pom.xml.releaseBackup
+**/pom.xml.versionsBackup
+**/pom.xml.next
+**/release.properties
+**/dependency-reduced-pom.xml
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+**/.gradle/
+**/build/
+**/!gradle/wrapper/gradle-wrapper.jar
+
+# Eclipse
+**/.classpath
+**/.project
+**/.settings/
+**/bin/
+
+# IntelliJ IDEA
+**/.idea/
+**/*.iml
+**/*.iws
+**/*.ipr
+**/out/
+
+# VS Code
+.vscode/
+
+# Spring Boot
+**/BOOT-INF/
+**/META-INF/
+**/*.jar
+**/*.war
+**/*.ear
+
+# Logs
+**/logs/
+**/*.log
+**/log/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Docker
+**/.dockerignore
+
+# Database
+**/data/
+**/*.db
+**/*.sql.bak
+
+# Environment
+**/.env
+**/.env.local
+
+# Temporary files
+**/tmp/
+**/temp/
+**/*.tmp
+**/*.bak
+**/*.swp
+**/*~
+
+# Test coverage
+**/coverage/
+**/.nyc_output/
+
+# Node modules (if any frontend added later)
+**/node_modules/
